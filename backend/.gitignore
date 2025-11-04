@@ -1,0 +1,12 @@
+# Node
+node_modules/
+.env
+dist/
+package-lock.json
+
+# Angular
+frontend/gdpr-ui/node_modules/
+frontend/gdpr-ui/dist/
+
+# VS Code
+.vscode/
