@@ -6,6 +6,6 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard-cards.html',
-  styleUrl: './dashboard-cards.css'
+  styleUrls: ['./dashboard-cards.css'],
 })
 export class DashboardCardsComponent {}

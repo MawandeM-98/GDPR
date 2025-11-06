@@ -1,0 +1,27 @@
+/* Sidebar styling (fallback if Tailwind not installed) */
+.sidebar{
+  width: 260px;
+  min-height: 100vh;
+  background: #1f6feb; /* blue */
+  color: white;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding: 20px;
+  box-sizing:border-box;
+}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.brand-title{font-weight:700;font-size:18px}
+.nav{display:flex;flex-direction:column;gap:8px}
+.nav-item{
+  display:flex;gap:12px;align-items:center;
+  padding:10px;border-radius:8px;color:white;text-decoration:none;
+}
+.nav-item:hover{background:rgba(255,255,255,0.08)}
+.nav-item.active{background:rgba(255,255,255,0.12)}
+.icon{width:20px;text-align:center}
+.sidebar-footer{border-top:1px solid rgba(255,255,255,0.06);padding-top:12px}
+.user{display:flex;gap:10px;align-items:center}
+.avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center}
+.user-name{font-weight:600}
+.user-role{font-size:12px;opacity:0.85}

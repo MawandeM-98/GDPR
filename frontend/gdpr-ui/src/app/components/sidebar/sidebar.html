@@ -1,1 +1,36 @@
-<p>sidebar works!</p>
+<div class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">🔰</div>
+    <div class="brand-text">
+      <div class="brand-title">GDPR Manager</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+      <i class="icon">🏠</i><span>Dashboard</span>
+    </a>
+    <a routerLink="/requests" routerLinkActive="active" class="nav-item">
+      <i class="icon">📋</i><span>Requests</span>
+    </a>
+    <a routerLink="/consent" routerLinkActive="active" class="nav-item">
+      <i class="icon">✔️</i><span>Consent</span>
+    </a>
+    <a routerLink="/vendors" routerLinkActive="active" class="nav-item">
+      <i class="icon">🏢</i><span>Vendors</span>
+    </a>
+    <a routerLink="/audit" routerLinkActive="active" class="nav-item">
+      <i class="icon">👁️</i><span>Audit Logs</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user">
+      <div class="avatar">👤</div>
+      <div class="user-info">
+        <div class="user-name">Admin</div>
+        <div class="user-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</div>
