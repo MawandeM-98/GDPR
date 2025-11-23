@@ -3,60 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>GDPR Compliance Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /*
-         * GLOBAL LAYOUT STYLES
-         * We use flex-col on the body to stack the topbar and the main content.
-         * We set h-screen (100vh) to ensure the layout fills the screen.
-         */
+
+
         body {
             height: 100vh;
             display: flex;
             flex-direction: column;
             margin: 0;
-            background: #f8fafc; /* Tailwind: bg-slate-50 */
+            background: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        /* SIDEBAR STYLES (Pulled from sidebar.css for completeness) */
-        .sidebar{
-            /* This width matches the ml-64 used on the main-content-wrapper below */
-            width: 260px; 
-            /* FIXED POSITIONING is essential to keep it on the side and out of the flow */
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
             position: fixed;
-            top: 0; 
+            top: 0;
             left: 0;
             height: 100%;
-            background: #8398b8; /* blue */
+            background: #1e293b;
             color: white;
-            display:flex;
-            flex-direction:column;
-            justify-content:flex-start;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
             padding: 20px;
-            box-sizing:border-box;
-            z-index: 20; /* Ensure it stays above content */
+            box-sizing: border-box;
+            z-index: 20;
         }
-        .brand{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-        .brand-title{font-weight:700;font-size:18px}
-        .nav{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-        .nav-item{
-            display:flex;gap:12px;align-items:center;
-            padding:10px;border-radius:8px;color:white;text-decoration:none;
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .brand-title {
+            font-weight: 700;
+            font-size: 18px;
+        }
+        
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .nav-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
             transition: background 0.2s;
         }
-        .nav-item:hover{background:rgba(255,255,255,0.08)}
-        .nav-item.active{background:rgba(255,255,255,0.12)}
-        .icon{width:20px;text-align:center}
-        .sidebar-footer{border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:auto;}
-        .user{display:flex;gap:10px;align-items:center}
-        .avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center}
-        .user-name{font-weight:600}
-        .user-role{font-size:12px;opacity:0.85}
-
-        /* TOPBAR STYLES (Pulled from a presumed topbar.css) */
+        
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .icon {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 12px;
+            margin-top: auto;
+        }
+        
+        .user {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+        
+        /* Topbar Styles */
         .topbar {
-            height: 120px; /* Define a fixed height for the top bar */
+            height: 120px;
             background-color: white;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
@@ -64,33 +119,36 @@
             justify-content: space-between;
             padding: 0 20px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            /* Important: Push it past the fixed sidebar */
-            margin-left: 260px; 
+            margin-left: 260px;
             z-index: 10;
         }
+        
         .topbar-left {
             display: flex;
             flex-direction: column;
             justify-content: center;
             line-height: 1;
-            margin-top: 5px;
         }
+        
         .title {
             font-size: 20px;
             font-weight: 700;
             color: #1f2937;
         }
+        
         .subtitle {
             font-size: 16px;
             font-weight: 600;
             color: #6b7280;
-            /* margin-top: 5px; */
+            margin-top: 5px;
         }
+        
         .topbar-actions {
             display: flex;
             gap: 10px;
             align-items: center;
         }
+        
         .btn-sm {
             padding: 4px 10px;
             border: 1px solid #d1d5db;
@@ -99,23 +157,27 @@
             cursor: pointer;
             font-size: 12px;
         }
+        
         .icon-btn {
             background: none;
             border: none;
             cursor: pointer;
             font-size: 18px;
         }
+        
+        /* Chart container styles */
+    /* Force chart containers to take full height */
+.chart-container {
+    height: 300px !important;
+}
 
-        /* Chart placeholder styles */
-        .chart-placeholder {
-            background: #f8fafc;
-            border: 1px dashed #d1d5db;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-        }
+.chart-container canvas {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -154,24 +216,23 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
     <div class="topbar">
         <div class="topbar-left">
-            <h1 class="title">GDPR Compliance Manager</h1><br>
+            <h1 class="title">GDPR Compliance Manager</h1>
             <p class="subtitle">European GDPR compliance management system</p>
         </div>
 
         <div class="topbar-actions">
-            
             <button class="icon-btn" title="Settings">⚙️</button>
         </div>
-        </div>
+    </div>
     
-    <main class="ml-[260px] p-3 w-full max-w-6xl mx-auto flex-1 overflow-y-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 mt-6">Dashboard</h1><br>
+    <main class="ml-[260px] p-6 w-full max-w-6xl mx-auto flex-1 overflow-y-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-8 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-600">Total Requests</h3>
                 <p class="text-3xl font-bold text-gray-800">142</p>
@@ -182,33 +243,129 @@
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-600">Resolved Requests</h3>
-                <p class="text-3xl font-bold text-red-500">3</p>
+                <p class="text-3xl font-bold text-green-500">119</p>
             </div>
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-600">Compliance Score</h3>
-                <p class="text-3xl font-bold text-blue-500">85%</p>
+                <p class="text-3xl font-bold text-blue-500">89%</p>
             </div>
         </div>
 
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-gray-700 mb-4">Request Types</h3>
-                <div class="relative h-64">
-                    <div class="chart-placeholder h-full w-full flex items-center justify-center">
-                        <p>Request Types Chart Canvas</p>
-                    </div>
+                <div class="chart-container">
+                    <canvas id="requestTypesChart"></canvas>
                 </div>
             </div>
 
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-xl font-semibold text-gray-700 mb-4">Consent Statistics</h3>
-                <div class="relative h-64">
-                    <div class="chart-placeholder h-full w-full flex items-center justify-center">
-                        <p>Consent Statistics Chart Canvas</p>
-                    </div>
+                <div class="chart-container">
+                    <canvas id="consentChart"></canvas>
                 </div>
             </div>
         </div>
     </main>
+   
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Request Types Chart (Donut Chart)
+            const requestTypesCtx = document.getElementById('requestTypesChart').getContext('2d');
+            const requestTypesChart = new Chart(requestTypesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Access Requests', 'Correction Requests', 'Erasure Requests'],
+                    datasets: [{
+                        data: [85, 32, 25], // Adjusted to match your total of 142
+                        backgroundColor: [
+                            '#3b82f6', // blue
+                            '#fbbf24', // yellow
+                            '#ef4444'  // red
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Consent Statistics Chart (Bar Chart)
+            const consentChartCtx = document.getElementById('consentChart').getContext('2d');
+            const consentChart = new Chart(consentChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Marketing', 'Cookies', 'Analytics', 'Third-party'],
+                    datasets: [
+                        {
+                            label: 'Consented',
+                            data: [2200, 1100, 550, 0],
+                            backgroundColor: '#10b981', // green
+                            borderWidth: 0,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Withdrawn',
+                            data: [0, 0, 0, 0], // According to your second screenshot
+                            backgroundColor: '#ef4444', // red
+                            borderWidth: 0,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rectRounded'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
