@@ -8,5 +8,5 @@
 .dot{width:12px;height:12px;border-radius:50%;display:inline-block}
 .dot.blue{background:#3b82f6}.dot.orange{background:#f59e0b}.dot.red{background:#ef4444}
 @media (max-width:920px){
-  .charts-row{grid-template-columns:1fr}
+.charts-row{grid-template-columns:1fr}
 }
