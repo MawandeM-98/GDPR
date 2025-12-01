@@ -1,12 +1,125 @@
-.page{display:flex;min-height:100vh;background:#f8fafc}
-/* .main-area{flex:1;display:flex;flex-direction:column;justify-content:flex-start;margin-top: -10px;}
-.content{padding:12px 24px 24px 24px;}
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:18px}
-.chart-card{background:white;border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(16,24,40,0.06)} */
-.legend{display:flex;gap:12px;margin-top:10px;align-items:center}
-.legend-item{display:inline-flex;gap:8px;align-items:center;color:#374151}
-.dot{width:12px;height:12px;border-radius:50%;display:inline-block}
-.dot.blue{background:#3b82f6}.dot.orange{background:#f59e0b}.dot.red{background:#ef4444}
-@media (max-width:920px){
-.charts-row{grid-template-columns:1fr}
+.page {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 18px;
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, 0.06);
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.legend-item {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: #374151;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.blue {
+  background: #3b82f6;
+}
+
+.dot.orange {
+  background: #f59e0b;
+}
+
+.dot.red {
+  background: #ef4444;
+}
+
+@media (max-width: 920px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Additional responsive styles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+  }
+  
+  .topbar {
+    margin-left: 220px;
+  }
+  
+  .main-content {
+    margin-left: 220px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 70px;
+    padding: 10px;
+  }
+  
+  .brand-text,
+  .nav-item span,
+  .user-info {
+    display: none;
+  }
+  
+  .brand-icon {
+    font-size: 24px;
+    margin: 0 auto;
+  }
+  
+  .topbar {
+    margin-left: 70px;
+    height: 100px;
+  }
+  
+  .main-content {
+    margin-left: 70px;
+    padding: 12px;
+  }
+}
+
+/* Chart specific styles */
+.chart-container canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Ensure charts are visible during transitions */
+:host {
+  display: block;
+}
+
+/* Loading state styles */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: #f9fafb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 16px;
 }
