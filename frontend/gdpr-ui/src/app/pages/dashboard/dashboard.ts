@@ -1,13 +1,20 @@
-import { Component, AfterViewInit, OnDestroy, Inject, PLATFORM_ID, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
-import Chart, { ChartConfiguration } from 'chart.js/auto';
+import { Component, AfterViewInit, OnDestroy, ViewChild, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrls: ['./dashboard.css'],
+  host: { 
+    'ngSkipHydration': 'true',
+    'class': 'hydrate-skip' 
+  }
 })
 export class DashboardPageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('requestTypesCanvas') requestTypesCanvas!: ElementRef<HTMLCanvasElement>;
@@ -17,76 +24,93 @@ export class DashboardPageComponent implements AfterViewInit, OnDestroy {
   private consentChart: Chart | null = null;
   
   activePage: 'dashboard' | 'requests' | 'consent' | 'vendors' | 'audit' = 'dashboard';
+  private isBrowser: boolean = false;
 
-  constructor(
-    @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      // Initial render of charts on dashboard
-      setTimeout(() => {
-        this.initializeCharts();
-      }, 0); // Ensure DOM is ready
-    }
+    if (!this.isBrowser) return;
+    
+    // Initial render with a small delay
+    setTimeout(() => {
+      this.renderChartsForCurrentPage();
+    }, 100);
   }
 
   ngOnDestroy(): void {
+    if (!this.isBrowser) return;
     this.destroyCharts();
   }
 
-  // Navigation handler
   navigateToPage(page: 'dashboard' | 'requests' | 'consent' | 'vendors' | 'audit'): void {
-    this.activePage = page;
-    this.cdr.detectChanges(); // Force change detection
+    if (!this.isBrowser) return;
     
-    // Reinitialize charts when switching to relevant pages
+    // Destroy existing charts
+    this.destroyCharts();
+    
+    // Change page
+    this.activePage = page;
+    
+    // Render charts for new page with delay
     setTimeout(() => {
-      this.destroyCharts();
-      if (page === 'dashboard' || page === 'requests' || page === 'consent') {
-        this.initializeCharts();
-      }
-    }, 50); // Small delay to ensure DOM is updated
+      this.renderChartsForCurrentPage();
+    }, 150);
   }
 
   private destroyCharts(): void {
     if (this.requestTypesChart) {
       this.requestTypesChart.destroy();
       this.requestTypesChart = null;
+      console.log('Request Types Chart destroyed');
     }
     if (this.consentChart) {
       this.consentChart.destroy();
       this.consentChart = null;
+      console.log('Consent Chart destroyed');
     }
   }
 
-  private initializeCharts(): void {
-    // Only initialize charts if they should be visible on current page
-    if (this.shouldShowRequestChart()) {
-      this.initializeRequestTypesChart();
+  private renderChartsForCurrentPage(): void {
+    if (!this.isBrowser) return;
+    
+    console.log('Rendering charts for page:', this.activePage);
+    
+    // Small delay to ensure DOM is updated
+    setTimeout(() => {
+      if (this.activePage === 'dashboard' || this.activePage === 'requests') {
+        this.createRequestTypesChart();
+      }
+      
+      if (this.activePage === 'dashboard' || this.activePage === 'consent') {
+        this.createConsentChart();
+      }
+    }, 50);
+  }
+
+  private createRequestTypesChart(): void {
+    if (!this.isBrowser) return;
+    
+    // Try multiple ways to get the canvas
+    let canvas: HTMLCanvasElement | null = null;
+    
+    // Try ViewChild
+    if (this.requestTypesCanvas?.nativeElement) {
+      canvas = this.requestTypesCanvas.nativeElement;
     }
     
-    if (this.shouldShowConsentChart()) {
-      this.initializeConsentChart();
+    // Try by ID
+    if (!canvas) {
+      canvas = document.getElementById('requestTypesCanvas') as HTMLCanvasElement;
     }
-  }
-
-  private shouldShowRequestChart(): boolean {
-    return this.activePage === 'dashboard' || this.activePage === 'requests';
-  }
-
-  private shouldShowConsentChart(): boolean {
-    return this.activePage === 'dashboard' || this.activePage === 'consent';
-  }
-
-  private initializeRequestTypesChart(): void {
-    if (!this.requestTypesCanvas?.nativeElement) {
-      console.warn('Request types canvas not available');
+    
+    if (!canvas) {
+      console.warn('Request Types canvas not found in DOM');
       return;
     }
-
-    // Destroy existing chart
+    
+    // Clear any existing chart
     if (this.requestTypesChart) {
       this.requestTypesChart.destroy();
     }
@@ -119,36 +143,44 @@ export class DashboardPageComponent implements AfterViewInit, OnDestroy {
               usePointStyle: true,
               pointStyle: 'circle'
             }
-          },
-          tooltip: {
-            callbacks: {
-              label: (context) => {
-                const label = context.label || '';
-                const value = context.raw as number;
-                const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
-                const percentage = Math.round((value / total) * 100);
-                return `${label}: ${value} (${percentage}%)`;
-              }
-            }
           }
         }
       }
     };
 
     try {
-      this.requestTypesChart = new Chart(this.requestTypesCanvas.nativeElement, doughnutConfig);
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        this.requestTypesChart = new Chart(ctx, doughnutConfig);
+        console.log('✅ Request Types Chart created successfully');
+      }
     } catch (error) {
       console.error('Error creating request types chart:', error);
     }
   }
 
-  private initializeConsentChart(): void {
-    if (!this.consentCanvas?.nativeElement) {
-      console.warn('Consent canvas not available');
+  private createConsentChart(): void {
+    if (!this.isBrowser) return;
+    
+    // Try multiple ways to get the canvas
+    let canvas: HTMLCanvasElement | null = null;
+    
+    // Try ViewChild
+    if (this.consentCanvas?.nativeElement) {
+      canvas = this.consentCanvas.nativeElement;
+    }
+    
+    // Try by ID
+    if (!canvas) {
+      canvas = document.getElementById('consentCanvas') as HTMLCanvasElement;
+    }
+    
+    if (!canvas) {
+      console.warn('Consent canvas not found in DOM');
       return;
     }
-
-    // Destroy existing chart
+    
+    // Clear any existing chart
     if (this.consentChart) {
       this.consentChart.destroy();
     }
@@ -157,26 +189,15 @@ export class DashboardPageComponent implements AfterViewInit, OnDestroy {
       type: 'bar',
       data: {
         labels: ['Marketing', 'Cookies', 'Analytics', 'Third-party'],
-        datasets: [
-          {
-            label: 'Consented',
-            data: [2200, 1100, 550, 300],
-            backgroundColor: '#10b981',
-            borderWidth: 0,
-            borderRadius: 4,
-            barPercentage: 0.6,
-            categoryPercentage: 0.7
-          },
-          {
-            label: 'Withdrawn',
-            data: [450, 200, 180, 150],
-            backgroundColor: '#ef4444',
-            borderWidth: 0,
-            borderRadius: 4,
-            barPercentage: 0.6,
-            categoryPercentage: 0.7
-          }
-        ]
+        datasets: [{
+          label: 'Consented',
+          data: [2200, 1100, 550, 300],
+          backgroundColor: '#10b981',
+          borderWidth: 0,
+          borderRadius: 4,
+          barPercentage: 0.6,
+          categoryPercentage: 0.7
+        }]
       },
       options: {
         responsive: true,
@@ -193,8 +214,11 @@ export class DashboardPageComponent implements AfterViewInit, OnDestroy {
               color: 'rgba(0, 0, 0, 0.05)'
             },
             ticks: {
-              callback: function(value) {
-                return value.toLocaleString();
+              callback: function(value: number | string): string {
+                if (typeof value === 'number') {
+                  return value.toLocaleString();
+                }
+                return value.toString();
               }
             }
           }
@@ -213,25 +237,13 @@ export class DashboardPageComponent implements AfterViewInit, OnDestroy {
     };
 
     try {
-      this.consentChart = new Chart(this.consentCanvas.nativeElement, barConfig);
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        this.consentChart = new Chart(ctx, barConfig);
+        console.log('✅ Consent Chart created successfully');
+      }
     } catch (error) {
       console.error('Error creating consent chart:', error);
-    }
-  }
-
-  // Helper method to update chart data (if needed in future)
-  updateRequestTypesData(newData: number[]): void {
-    if (this.requestTypesChart) {
-      this.requestTypesChart.data.datasets[0].data = newData;
-      this.requestTypesChart.update();
-    }
-  }
-
-  updateConsentData(consentedData: number[], withdrawnData: number[]): void {
-    if (this.consentChart) {
-      this.consentChart.data.datasets[0].data = consentedData;
-      this.consentChart.data.datasets[1].data = withdrawnData;
-      this.consentChart.update();
     }
   }
 }
