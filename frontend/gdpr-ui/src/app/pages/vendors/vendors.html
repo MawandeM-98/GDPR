@@ -1,0 +1,30 @@
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Vendors</h1>
+
+<div class="bg-white rounded-lg shadow-md overflow-x-auto">
+  <table class="w-full text-left">
+    <thead class="bg-gray-50 text-sm text-gray-600">
+      <tr>
+        <th class="px-6 py-3 font-semibold">Vendor</th>
+        <th class="px-6 py-3 font-semibold">Service</th>
+        <th class="px-6 py-3 font-semibold">Data shared</th>
+        <th class="px-6 py-3 font-semibold">DPA status</th>
+        <th class="px-6 py-3 font-semibold">Last review</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      @for (vendor of vendors; track vendor.name) {
+        <tr>
+          <td class="px-6 py-4 font-medium text-gray-800">{{ vendor.name }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ vendor.service }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ vendor.dataShared }}</td>
+          <td class="px-6 py-4">
+            <span class="px-3 py-1 rounded-full text-sm font-medium" [class]="badgeClass(vendor.dpaStatus)">
+              {{ vendor.dpaStatus }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-gray-600">{{ vendor.lastReview }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

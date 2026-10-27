@@ -1,0 +1,30 @@
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Audit Logs</h1>
+
+<div class="bg-white rounded-lg shadow-md overflow-x-auto">
+  <table class="w-full text-left">
+    <thead class="bg-gray-50 text-sm text-gray-600">
+      <tr>
+        <th class="px-6 py-3 font-semibold">Time</th>
+        <th class="px-6 py-3 font-semibold">User</th>
+        <th class="px-6 py-3 font-semibold">Action</th>
+        <th class="px-6 py-3 font-semibold">Resource</th>
+        <th class="px-6 py-3 font-semibold">Outcome</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      @for (entry of entries; track entry.timestamp + entry.action) {
+        <tr>
+          <td class="px-6 py-4 text-gray-600 whitespace-nowrap">{{ entry.timestamp }}</td>
+          <td class="px-6 py-4 font-medium text-gray-800">{{ entry.user }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ entry.action }}</td>
+          <td class="px-6 py-4 text-gray-600">{{ entry.resource }}</td>
+          <td class="px-6 py-4">
+            <span class="px-3 py-1 rounded-full text-sm font-medium" [class]="badgeClass(entry.outcome)">
+              {{ entry.outcome }}
+            </span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
